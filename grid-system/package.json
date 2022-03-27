@@ -8,11 +8,13 @@
     "dist"
   ],
   "scripts": {
-    "rollup": "rollup -c"
+    "build": "rollup -c",
+    "dev": "rollup -cw"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "prop-types": "^15.8.1",
     "react": "^17.0.2"
   },
   "devDependencies": {
