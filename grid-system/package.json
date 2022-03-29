@@ -2,8 +2,8 @@
   "name": "react-grid-system",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
   "files": [
     "dist"
   ],
@@ -13,8 +13,7 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "prop-types": "^15.8.1",
+  "peerDependencies": {
     "react": "^17.0.2"
   },
   "devDependencies": {
@@ -25,7 +24,14 @@
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
+    "postcss": "^8.4.12",
     "rollup": "^2.62.0",
-    "rollup-plugin-dts": "^4.1.0"
+    "rollup-plugin-dts": "^4.1.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "sass": "^1.49.9"
+  },
+  "dependencies": {
+    "prop-types": "^15.8.1",
+    "immer": "^9.0.12"
   }
 }
