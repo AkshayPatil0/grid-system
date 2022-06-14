@@ -1,42 +1,30 @@
 import { useState, useEffect } from "react";
-
-const BREAKPOINTS = {
-  xs: [320, 480],
-  sm: [481, 768],
-  md: [769, 1024],
-  lg: [1025, 1440],
-  xl: [1441],
-};
-
-const breakpoints = Object.entries(BREAKPOINTS).map(([bp]) => bp);
-const querys = Object.entries(BREAKPOINTS).map(
-  ([bp, values]) =>
-    `(min-width: ${values[0]}px)${
-      values[1] ? ` and (max-width: ${values[1]}px )` : ""
-    }`
-);
+import { meadiaQuerysMap } from "../utils/constants";
 
 const useBreakpoint = () => {
-  const [breakpoint, setBreakpoint] = useState(Boolean);
-
-  const mediaListener = (mediaIndex) => (media) => {
-    if (media.matches) {
-      setBreakpoint(breakpoints[mediaIndex]);
-    }
-  };
-
-  const mediaListeners = querys.map((q, i) => mediaListener(i));
-  const medias = querys.map((query) => window.matchMedia(query));
+  const [breakpoint, setBreakpoint] = useState(String);
 
   useEffect(() => {
-    medias.forEach((media, index) => {
+    const mediaListener = (breakpoint) => (media) => {
       if (media.matches) {
-        setBreakpoint(breakpoints[index]);
+        setBreakpoint(breakpoint);
       }
-      media.addListener(mediaListeners[index]);
-    });
+    };
+
+    const mappedMedias = Object.entries(meadiaQuerysMap).map(
+      ([breakpoint, query]) => {
+        const media = window.matchMedia(query);
+        mediaListener(breakpoint)(media);
+        const mappedListener = mediaListener(breakpoint);
+        media.addEventListener("change", mappedListener);
+        return { media, listener: mappedListener };
+      }
+    );
+
     return () =>
-      medias.forEach((media, i) => media.removeListener(mediaListeners[i]));
+      mappedMedias.forEach(({ media, listener }) =>
+        media.removeEventListener("change", listener)
+      );
   }, []);
 
   return breakpoint;

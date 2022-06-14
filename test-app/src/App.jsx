@@ -27,7 +27,8 @@ function App() {
       <button onClick={onChangeCol(-1)}>-</button>
       <input type="number" value={col} readOnly />
       <button onClick={onChangeCol(1)}>+</button>
-      <Grid col={col}>
+      {/* <Grid col={col} colXS={2} colSM={3} colMD={4} colLG={6}> */}
+      <Grid >
         {images.map((image, i) => (
           <div className="element" key={image}>
             <img src={image} />
@@ -35,6 +36,14 @@ function App() {
           </div>
         ))}
       </Grid>
+      {/* <Grid col={3} >
+        {images.map((image, i) => (
+          <div className="element" key={image}>
+            <img src={image} />
+            <span>{i + 1}</span>
+          </div>
+        ))}
+      </Grid> */}
     </div>
   );
 }

@@ -1,32 +1,27 @@
 import React from "react";
 import PropTypes from "prop-types";
-import produce from "immer";
 
 import classes from "./grid.scss";
 import useBreakpoint from "../../hooks/useBreakpoint";
+import { BREAKPOINTS_MAP } from "../../utils/constants";
+import { getResponsiveColCount, makeGrid } from "../../utils/grid";
 
-const makeGrid = (elements, col) => {
-  return elements.reduce((grid, node, elementIndex) => {
-    let rowIndex = elementIndex % col;
-    if (grid[rowIndex]) {
-      return produce(grid, (draft) => {
-        draft[rowIndex].push({ node, key: elementIndex });
-      });
-    }
-    return produce(grid, (draft) => {
-      draft[rowIndex] = [{ node, key: elementIndex }];
-    });
-  }, []);
-};
-function Grid(props) {
+function ResponsiveGrid(props) {
   const { children, col } = props;
-
-  const gridContent = makeGrid(React.Children.toArray(children), col);
-
   const breakpoint = useBreakpoint();
 
+  console.log(props, breakpoint);
+  // const currentCol = props[`col${breakpoint.toUpperCase()}`] || col;
+  const currentCol = getResponsiveColCount(col, breakpoint);
+
+  if (!currentCol) {
+    throw new Error("col prop is not properly set !");
+  }
+
+  const gridContent = makeGrid(React.Children.toArray(children), currentCol);
+
   const columnClass =
-    classes.grid__column + " " + classes[`grid__column__${col}`];
+    classes.grid__column + " " + classes[`grid__column__${currentCol}`];
 
   return (
     <div className={classes.grid}>
@@ -34,20 +29,42 @@ function Grid(props) {
         <div className={columnClass} key={i}>
           {column.map((el) => (
             <div key={el.key}>{el.node}</div>
-          ))}{" "}
+          ))}
         </div>
       ))}
     </div>
   );
 }
 
-Grid.propTypes = {
-  col: PropTypes.number,
-  colXs: PropTypes.number,
-  colSm: PropTypes.number,
-  colMd: PropTypes.number,
-  colLg: PropTypes.number,
-  children: PropTypes.arrayOf(PropTypes.node),
+ResponsiveGrid.defaultProps = {
+  col: {
+    xs: 1,
+    sm: 2,
+    md: 3,
+    lg: 4,
+    xl: 6,
+    default: 1,
+  },
 };
 
-export default Grid;
+ResponsiveGrid.propTypes = {
+  col: PropTypes.oneOfType([
+    PropTypes.exact({
+      ...Object.keys(BREAKPOINTS_MAP).reduce(
+        (mappedObj, bp) => ({ ...mappedObj, [bp]: PropTypes.number }),
+        {}
+      ),
+      default: PropTypes.number.isRequired,
+    }),
+    PropTypes.number,
+  ]),
+
+  // colXS: PropTypes.number,
+  // colSM: PropTypes.number,
+  // colMD: PropTypes.number,
+  // colLG: PropTypes.number,
+  // colXL: PropTypes.number,
+  children: PropTypes.arrayOf(PropTypes.node).isRequired,
+};
+
+export default ResponsiveGrid;
